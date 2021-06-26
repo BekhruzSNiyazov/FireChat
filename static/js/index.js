@@ -2,5 +2,8 @@ setTitle("Welcome to FireChat");
 
 addNewLine();
 
-addHeading("Welcome to FireChat", 6, "center");
-
+if (!checkCookie("username")) {
+	addHeading("Welcome to FireChat", 6, "center");
+} else {
+	addHeading("Hello, " + getCookie("name") + "!", 6, "center");
+}
