@@ -32,4 +32,14 @@ if (!checkCookie("username")) {
 
 navbar.addItem("button", ["primary", "create chatroom", "window.location.replace(`create-chat-room`)"], "right");
 
-addStyle(".nav-button { margin-right: 1vw !important; }");
+addStyle(`
+.nav-button { margin-right: 1vw !important; }
+
+* {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-weight: 900 !important;
+}
+`);
