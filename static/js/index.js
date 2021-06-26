@@ -1,9 +1,11 @@
 setTitle("Welcome to FireChat");
 
-addNewLine();
+let heading;
 
 if (!checkCookie("username")) {
-	addHeading("Welcome to FireChat", 6, "center");
+	heading = addHeading("Welcome to FireChat", 6, "center");
 } else {
-	addHeading("Hello, " + getCookie("name") + "!", 6, "center");
+	heading = addHeading("Hello, " + getCookie("name") + "!", 6, "center");
 }
+
+heading.setStyle("margin-top: 20vh");
