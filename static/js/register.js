@@ -24,7 +24,6 @@ registerButton.onclick = () => {
 		alert("You are already registered!");
 		window.location.replace("/");
 	}
-	registerButton.element.innerHTML.innerHTML = "<i class=\"fa fa-spinner fa-spin\"></i> Register";
 	let done = false;
 	let username = usernameField.element.value;
 	let _name = nameField.element.value;
@@ -42,22 +41,18 @@ registerButton.onclick = () => {
 					});
 					setCookie("username", username, 100);
 					setCookie("name", _name, 100);
-					registerButton.element.innerHTML = "Register";
 					window.location.replace("/");
 				} else {
 					if (!done) {
-						registerButton.element.innerHTML = "Register";
 						alert("A user with that username already exists! Try a different username.")
 						usernameField.element.value = "";
 					}
 				}
 			});
 		} else {
-			registerButton.element.innerHTML = "Register";
 			alert("Passwords do not match! Please, try again.");
 		}
 	} else {
-		registerButton.element.innerHTML = "Register";
 		alert("You should fill in all input fields!");
 	}
 };
