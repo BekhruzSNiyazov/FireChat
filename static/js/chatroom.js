@@ -8,6 +8,8 @@ createAlertField();
 
 let splitter = "||splitter||";
 
+setCookie("tempUsername" + id, "");
+
 firebase.database().ref("/chatrooms").on("value", function(snapshot) {
 	// if the chatroom was already created
 	if (snapshot.val()[id]) {
