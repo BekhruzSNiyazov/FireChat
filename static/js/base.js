@@ -26,11 +26,11 @@ if (!checkCookie("username")) {
 	navbar.addItem("button", [
 		"danger",
 		"sign out",
-		"setCookie(`username`, ``); setCookie(`name`, ``); window.location.replace(`/`);"
+		"setCookie(`username`, ``); setCookie(`name`, ``); setCookie(`tempUsername`, ``); window.location.replace(`/`);"
 	], "right", "nav-button");
 }
 
-navbar.addItem("button", ["primary", "create chatroom", "window.location.replace(`create-chat-room`)"], "right");
+navbar.addItem("button", ["primary", "create chatroom", "window.location.replace(`create-chatroom`)"], "right");
 
 addStyle(`
 .nav-button { margin-right: 1vw !important; }
@@ -43,3 +43,12 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: 900 !important;
 }
 `);
+
+let copy_to_clipboard = (text) => {
+	navigator.clipboard.writeText(text);
+}
+
+let generate_id = () => {
+	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+

@@ -32,7 +32,7 @@ registerButton.onclick = () => {
 	if (username !== "" && _name != "" && password != "" && confirmPassword != "") {
 		if (password == confirmPassword) {
 			firebase.database().ref("/").on("value", function(snapshot) {
-				if (snapshot.val()["user"] == undefined) {
+				if (snapshot.val()["users"][username] == undefined) {
 					done = true;
 					firebase.database().ref("/users/" + username).set({
 						Username: username,

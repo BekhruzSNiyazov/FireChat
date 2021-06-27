@@ -14,5 +14,13 @@ def register():
 def sign_in():
 	return render_template("sign_in.html")
 
+@app.route("/create-chatroom")
+def create_chatroom():
+	return render_template("create_chatroom.html")
+
+@app.route("/chat-<_id>")
+def chatroom(_id):
+	return render_template("chatroom.html", id=id);
+
 if __name__ == "__main__":
 	app.run(debug=True) 

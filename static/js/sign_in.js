@@ -16,7 +16,7 @@ inputFields.forEach((inputField) => {
 	inputField.update();
 });
 
-let signInButton = addButton("register", "primary", "center");
+let signInButton = addButton("sign in", "primary", "center");
 signInButton.onclick = () => {
 	if (checkCookie("username")) {
         alert("You are already signed in!");
