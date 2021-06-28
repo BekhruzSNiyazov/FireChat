@@ -10,6 +10,16 @@ let splitter = "||splitter||";
 
 setCookie("tempUsername" + id, "");
 
+let messageField = addInput("text", "Type a message");
+messageField.classes = "messageField";
+messageField.position = "center";
+messageField.update();
+
+messageField.outerElement.style.position = "fixed";
+messageField.outerElement.style.top = "90%";
+messageField.outerElement.style.left = "50%";
+messageField.outerElement.style.marginLeft = "-45%";
+
 firebase.database().ref("/chatrooms").on("value", function(snapshot) {
 	// if the chatroom was already created
 	if (snapshot.val()[id]) {
@@ -44,3 +54,8 @@ firebase.database().ref("/chatrooms").on("value", function(snapshot) {
 		});
 	}
 });
+
+addStyle(`
+.messageField {
+	width: 90% !important;
+}`);
