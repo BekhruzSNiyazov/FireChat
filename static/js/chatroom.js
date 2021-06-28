@@ -24,8 +24,8 @@ let notified_about = [];
 let joined = false;
 let messages;
 let received_messages = [];
-
 let messages_text = [];
+let line_breaks = []; 
 
 firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 	// if the chatroom was already created
@@ -44,6 +44,7 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 			const created_by = snapshot.val()[id]["Created_by"];
 			const members = snapshot.val()[id]["Members"].split(splitter);
 			const number_of_messages = snapshot.val()[id]["Number_of_messages"];
+			const messages = snapshot.val()[id]["Messages"];
 			let username;
 			if (checkCookie("username")) {
 				username = getCookie("username");
@@ -58,7 +59,8 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 					Created_by: created_by,
 					Members: snapshot.val()[id]["Members"] + splitter + username,
 					Number_of_members: number_of_members + 1,
-					Number_of_messages: number_of_messages
+					Number_of_messages: number_of_messages,
+					Messages: messages ? messages : {}
 				});
 			}
 			joined = true;
@@ -93,6 +95,8 @@ document.onkeydown = async (e) => {
 
 let send_message = (message) => {
 
+	if (!message.trim()) return;
+
 	let number_of_messages, created_by, members, number_of_members, messages;
 	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
 		number_of_messages = snapshot.val()["Number_of_messages"];
@@ -121,21 +125,59 @@ let remove_messages = () => {
 	messages_text.forEach((message) => {
 		message.remove();
 	});
+	line_breaks.forEach((line_break) => {
+		line_break.remove();
+	});
 }
 
 let load_messages = (snapshot) => {
 	if (snapshot["Messages"] !== messages) {
 		const number_of_messages = snapshot["Number_of_messages"];
-		for (let i = 0; i < number_of_messages; i++) {
-			const msg = Object.values(snapshot["Messages"])[i];
-			const message = addText(msg["Message"], "center");
-			messages_text = [...messages_text, message];
-			messages = snapshot["Messages"];
+		for (let i = 1; i <= number_of_messages; i++) {
+			const msg = snapshot["Messages"]["message" + i];
+			if (msg) {
+				const message = addText(msg["Message"]);
+				message.classes = "message";
+				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername")) {
+					message.classes += " myMessage";
+				} else {
+					console.log('"' + msg["Sent_by"] + '"', '"' + getCookie("username") + '"', '"'+ getCookie("tempUsername") + '"');
+				}
+				message.update();
+				messages_text = [...messages_text, message];
+				messages = snapshot["Messages"];
+				let br = document.createElement("br");
+				br.style.clear = "both";
+				document.body.appendChild(br);
+				line_breaks = [...line_breaks, br];
+			}
 		}
 	}
 }
 
 addStyle(`
+
 .messageField {
 	width: 90% !important;
-}`);
+}
+
+body {
+	margin-bottom: 17.5vh;
+}
+
+.message {
+	display: inline-block;
+	background-color: lightgray;
+	border-radius: 20px;
+	padding: 1vh 1vw 1vh 1vw;
+	max-width: 40%;
+	margin-left: 5%;
+	margin-right: 5%;
+	margin-bottom: 0.1%;
+}
+
+.myMessage {
+	float: right;
+}
+
+`);
