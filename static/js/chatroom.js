@@ -41,6 +41,8 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 
 		// making the user join the chatroom
 		if (!joined) {
+			joined = true;
+			console.log("here");
 			const created_by = snapshot.val()[id]["Created_by"];
 			const members = snapshot.val()[id]["Members"].split(splitter);
 			const number_of_messages = snapshot.val()[id]["Number_of_messages"];
@@ -49,8 +51,9 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 			if (checkCookie("username")) {
 				username = getCookie("username");
 				setCookie("tempUsername" + id, username);
-			} else if (checkCookie("tempUsername" + id)) username = getCookie("tempUsername" + id);
-			else {
+			} else if (checkCookie("tempUsername" + id)) {
+				username = getCookie("tempUsername" + id);
+			} else {
 				username = "Guest " + (number_of_members + 1);
 				setCookie("tempUsername" + id, username);
 			}
@@ -63,7 +66,6 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 					Messages: messages ? messages : {}
 				});
 			}
-			joined = true;
 		}
 
 		remove_messages();
@@ -138,10 +140,8 @@ let load_messages = (snapshot) => {
 			if (msg) {
 				const message = addText(msg["Message"]);
 				message.classes = "message";
-				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername")) {
+				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername" + id)) {
 					message.classes += " myMessage";
-				} else {
-					console.log('"' + msg["Sent_by"] + '"', '"' + getCookie("username") + '"', '"'+ getCookie("tempUsername") + '"');
 				}
 				message.update();
 				messages_text = [...messages_text, message];
