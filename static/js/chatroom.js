@@ -37,20 +37,22 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 		// making the user join the chatroom
 		if (!joined) {
 			joined = true;
-			console.log("here");
 			const created_by = snapshot.val()[id]["Created_by"];
 			const members = snapshot.val()[id]["Members"].split(splitter);
 			const number_of_messages = snapshot.val()[id]["Number_of_messages"];
 			const messages = snapshot.val()[id]["Messages"];
+			const number_of_members = snapshot.val()[id]["Number_of_members"];
 			let username;
 			if (checkCookie("username")) {
 				username = getCookie("username");
 				setCookie("tempUsername" + id, username);
 			} else if (checkCookie("tempUsername" + id)) {
 				username = getCookie("tempUsername" + id);
+				setCookie("username", username);
 			} else {
 				username = "Guest " + (number_of_members + 1);
 				setCookie("tempUsername" + id, username);
+				setCookie("username", username);
 			}
 			if (!members.includes(getCookie("username")) && !members.includes(getCookie("tempUsername" + id))) {
 				firebase.database().ref("/chatrooms/" + id).set({
@@ -81,18 +83,20 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 		});
 	}
 
-	let text = "";
-	typing.split(splitter).forEach(user => {
-		if (user) {
-			if (!users_typing.includes(user)) {
-				users_typing = [...users_typing, user];
-				text += user + " and ";
+	if (typing) {
+		let text = "";
+		typing.split(splitter).forEach(user => {
+			if (user) {
+				if (!users_typing.includes(user)) {
+					users_typing = [...users_typing, user];
+					text += user + ", ";
+				}
 			}
-		}
-	});
-	text += "are typing...";
-	typing_text.text = text;
-	typing_text.update();
+		});
+		text += "are typing...";
+		typing_text.text = text;
+		typing_text.update();
+	}
 });
 
 document.onkeydown = async (e) => {
@@ -103,10 +107,11 @@ document.onkeydown = async (e) => {
 		send_message(messageField.element.value);
 		messageField.element.value = "";
 		users_typing = users_typing.filter(user => user !== getCookie("username"));
-		let typing = "";
+		let new_typing = "";
 		users_typing.forEach(user => {
-			typing += user + splitter;
+			new_typing += user + splitter;
 		});
+		console.log(new_typing, users_typing);
 		const [number_of_messages, created_by, members, number_of_members, messages,] = get_info();
 		firebase.database().ref("/chatrooms/" + id).set({
 			Number_of_messages: number_of_messages,
@@ -114,10 +119,11 @@ document.onkeydown = async (e) => {
 			Members: members,
 			Number_of_members: number_of_members,
 			Messages: messages,
-			Typing: typing
+			Typing: new_typing
 		});
 	} else {
 		if (!users_typing.includes(getCookie("username"))) {
+			console.log("here");
 			const [number_of_messages, created_by, members, number_of_members, messages, typing] = get_info();
 			firebase.database().ref("/chatrooms/" + id).set({
 				Number_of_messages: number_of_messages,
@@ -127,6 +133,7 @@ document.onkeydown = async (e) => {
 				Messages: messages,
 				Typing: typing + splitter + getCookie("username")
 			});
+			users_typing = [...users_typing, getCookie("username")];
 		}
 	}
 }
