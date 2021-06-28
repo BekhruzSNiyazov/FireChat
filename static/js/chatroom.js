@@ -20,24 +20,19 @@ messageField.outerElement.style.top = "90%";
 messageField.outerElement.style.left = "50%";
 messageField.outerElement.style.marginLeft = "-45%";
 
-let notified_about = [];
 let joined = false;
 let messages;
 let received_messages = [];
 let messages_text = [];
-let line_breaks = []; 
+let line_breaks = [];
+let users_typing = [];
+
+let typing_text = addText("", "center");
 
 firebase.database().ref("/chatrooms").on("value", (snapshot) => {
+	let typing = get_info()[5];
 	// if the chatroom was already created
 	if (snapshot.val()[id]) {
-
-		// notifying if a new user has joined the chatroom
-		let number_of_members = snapshot.val()[id]["Number_of_members"];
-		const lastJoined = snapshot.val()[id]["Members"].split(splitter)[number_of_members - 1];
-		if (!notified_about.includes(lastJoined)) {
-			addAlert(`${lastJoined} has joined the chatroom`, "info");
-			notified_about = [...notified_about, lastJoined];
-		}
 
 		// making the user join the chatroom
 		if (!joined) {
@@ -60,7 +55,8 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 					Members: snapshot.val()[id]["Members"] + splitter + username,
 					Number_of_members: number_of_members + 1,
 					Number_of_messages: number_of_messages,
-					Messages: messages ? messages : {}
+					Messages: messages ? messages : {},
+					Typing: typing
 				});
 			}
 			joined = true;
@@ -78,9 +74,23 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 			Created_by: username,
 			Members: username,
 			Number_of_members: 1,
-			Number_of_messages: 0
+			Number_of_messages: 0,
+			Typing: ""
 		});
 	}
+
+	let text = "";
+	typing.split(splitter).forEach(user => {
+		if (user) {
+			if (!users_typing.includes(user)) {
+				users_typing = [...users_typing, user];
+				text += user + " and ";
+			}
+		}
+	});
+	text += "are typing...";
+	typing_text.text = text;
+	typing_text.update();
 });
 
 document.onkeydown = async (e) => {
@@ -90,19 +100,59 @@ document.onkeydown = async (e) => {
 	if (keyCode === "Enter") {
 		send_message(messageField.element.value);
 		messageField.element.value = "";
+		users_typing = users_typing.filter(user => user !== getCookie("username"));
+		let typing = "";
+		users_typing.forEach(user => {
+			typing += user + splitter;
+		});
+		const [number_of_messages, created_by, members, number_of_members, messages,] = get_info();
+		firebase.database().ref("/chatrooms/" + id).set({
+			Number_of_messages: number_of_messages,
+			Created_by: created_by,
+			Members: members,
+			Number_of_members: number_of_members,
+			Messages: messages,
+			Typing: typing
+		});
+	} else {
+		if (!users_typing.includes(getCookie("username"))) {
+			const [number_of_messages, created_by, members, number_of_members, messages, typing] = get_info();
+			firebase.database().ref("/chatrooms/" + id).set({
+				Number_of_messages: number_of_messages,
+				Created_by: created_by,
+				Members: members,
+				Number_of_members: number_of_members,
+				Messages: messages,
+				Typing: typing + splitter + getCookie("username")
+			});
+		}
 	}
+}
+
+let get_info = () => {
+	let number_of_messages, created_by, members, number_of_members, messages, typing;
+	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
+		number_of_messages = snapshot.val()["Number_of_messages"];
+		created_by = snapshot.val()["Created_by"];
+		members = snapshot.val()["Members"];
+		number_of_members = snapshot.val()["Number_of_members"];
+		messages = snapshot.val()["Messages"];
+		typing = snapshot.val()["Typing"];
+	});
+	return [number_of_messages, created_by, members, number_of_members, messages, typing];
 }
 
 let send_message = (message) => {
 
 	if (!message.trim()) return;
 
-	let number_of_messages, created_by, members, number_of_members, messages;
+	let number_of_messages, created_by, members, number_of_members, messages, typing;
 	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
 		number_of_messages = snapshot.val()["Number_of_messages"];
 		created_by = snapshot.val()["Created_by"];
 		members = snapshot.val()["Members"];
 		number_of_members = snapshot.val()["Number_of_members"];
+		typing = snapshot.val()["Typing"];
 	});
 	firebase.database().ref("/chatrooms/" + id + "/Messages/message" + (number_of_messages + 1)).set({
 		Message: message,
@@ -116,7 +166,8 @@ let send_message = (message) => {
 		Members: members,
 		Number_of_members: number_of_members,
 		Number_of_messages: number_of_messages + 1,
-		Messages: messages
+		Messages: messages,
+		Typing: typing
 	});
 
 }
@@ -140,8 +191,6 @@ let load_messages = (snapshot) => {
 				message.classes = "message";
 				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername")) {
 					message.classes += " myMessage";
-				} else {
-					console.log('"' + msg["Sent_by"] + '"', '"' + getCookie("username") + '"', '"'+ getCookie("tempUsername") + '"');
 				}
 				message.update();
 				messages_text = [...messages_text, message];
@@ -153,6 +202,7 @@ let load_messages = (snapshot) => {
 			}
 		}
 	}
+	window.scrollTo(0, document.body.scrollHeight);
 }
 
 addStyle(`
@@ -167,9 +217,9 @@ body {
 
 .message {
 	display: inline-block;
-	background-color: lightgray;
-	border-radius: 20px;
-	padding: 1vh 1vw 1vh 1vw;
+	background-color: #c9c9c9;
+	border-radius: 18px;
+	padding: 8px 20px;
 	max-width: 40%;
 	margin-left: 5%;
 	margin-right: 5%;
@@ -177,6 +227,7 @@ body {
 }
 
 .myMessage {
+	background-color: #e3e3e3;
 	float: right;
 }
 
