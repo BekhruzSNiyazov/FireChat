@@ -46,4 +46,6 @@ signInButton.onclick = () => {
 };
 signInButton.update();
 
+setCookie("theme", "light", 100);
+
 addStyle(".form-input { margin-bottom: 2vh !important; }");
