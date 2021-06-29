@@ -20,7 +20,24 @@ themeButton.onclick = () => {
 	themeButton.update();
 	setCookie("theme", currentTheme === "light" ? "dark" : "light");
 };
+themeButton.classes = " button";
 themeButton.update();
+
+addHTML("<hr>");
+
+addHeading("Account")
+
+addNewLine();
+
+let signOutButton = addButton("sign out", "danger");
+signOutButton.onclick = () => {
+	setCookie("username", "");
+	setCookie("name", "");
+	setCookie("tempUsername", "");
+	window.location.replace("/");
+}
+signOutButton.classes = " button";
+signOutButton.update();
 
 addStyle(`
 
@@ -33,7 +50,7 @@ h1, h2 {
 	margin-left: 5%;
 }
 
-button {
+.button {
 	margin-left: 10%;
 }
 
