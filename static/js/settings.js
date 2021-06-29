@@ -25,7 +25,7 @@ themeButton.update();
 
 addHTML("<hr>");
 
-addHeading("Account")
+addHeading("Account", 5);
 
 addNewLine();
 
