@@ -1,3 +1,5 @@
+let md = new Remarkable();
+
 const chatroom = window.location.href;
 const id = chatroom.split("-")[1];
 
@@ -153,6 +155,7 @@ let load_messages = (snapshot) => {
 					message.classes += " myMessage";
 				}
 				message.update();
+				message.element.innerHTML = md.render(msg["Message"]).replaceAll("<p>", "").replaceAll("</p>", "");
 				messages_text = [...messages_text, message];
 				messages = snapshot["Messages"];
 				let br = document.createElement("br");
