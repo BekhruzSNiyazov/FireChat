@@ -25,12 +25,8 @@ let messages;
 let received_messages = [];
 let messages_text = [];
 let line_breaks = [];
-let users_typing = [];
-
-let typing_text = addText("", "center");
 
 firebase.database().ref("/chatrooms").on("value", (snapshot) => {
-	let typing = get_info()[5];
 	// if the chatroom was already created
 	if (snapshot.val()[id]) {
 
@@ -60,8 +56,7 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 					Members: snapshot.val()[id]["Members"] + splitter + username,
 					Number_of_members: number_of_members + 1,
 					Number_of_messages: number_of_messages,
-					Messages: messages ? messages : {},
-					Typing: typing
+					Messages: messages ? messages : {}
 				});
 			}
 		}
@@ -78,25 +73,10 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 			Created_by: username,
 			Members: username,
 			Number_of_members: 1,
-			Number_of_messages: 0,
-			Typing: ""
+			Number_of_messages: 0
 		});
 	}
 
-	if (typing) {
-		let text = "";
-		typing.split(splitter).forEach(user => {
-			if (user) {
-				if (!users_typing.includes(user)) {
-					users_typing = [...users_typing, user];
-					text += user + ", ";
-				}
-			}
-		});
-		text += "are typing...";
-		typing_text.text = text;
-		typing_text.update();
-	}
 });
 
 document.onkeydown = async (e) => {
@@ -106,62 +86,34 @@ document.onkeydown = async (e) => {
 	if (keyCode === "Enter") {
 		send_message(messageField.element.value);
 		messageField.element.value = "";
-		users_typing = users_typing.filter(user => user !== getCookie("username"));
-		let new_typing = "";
-		users_typing.forEach(user => {
-			new_typing += user + splitter;
-		});
-		console.log(new_typing, users_typing);
-		const [number_of_messages, created_by, members, number_of_members, messages,] = get_info();
-		firebase.database().ref("/chatrooms/" + id).set({
-			Number_of_messages: number_of_messages,
-			Created_by: created_by,
-			Members: members,
-			Number_of_members: number_of_members,
-			Messages: messages,
-			Typing: new_typing
-		});
-	} else {
-		if (!users_typing.includes(getCookie("username"))) {
-			console.log("here");
-			const [number_of_messages, created_by, members, number_of_members, messages, typing] = get_info();
-			firebase.database().ref("/chatrooms/" + id).set({
-				Number_of_messages: number_of_messages,
-				Created_by: created_by,
-				Members: members,
-				Number_of_members: number_of_members,
-				Messages: messages,
-				Typing: typing + splitter + getCookie("username")
-			});
-			users_typing = [...users_typing, getCookie("username")];
-		}
+		messageField.element.blur();
+	} else if (keyCode === "Escape") {
+		messageField.element.blur();
 	}
 }
 
 let get_info = () => {
-	let number_of_messages, created_by, members, number_of_members, messages, typing;
+	let number_of_messages, created_by, members, number_of_members, messages;
 	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
 		number_of_messages = snapshot.val()["Number_of_messages"];
 		created_by = snapshot.val()["Created_by"];
 		members = snapshot.val()["Members"];
 		number_of_members = snapshot.val()["Number_of_members"];
 		messages = snapshot.val()["Messages"];
-		typing = snapshot.val()["Typing"];
 	});
-	return [number_of_messages, created_by, members, number_of_members, messages, typing];
+	return [number_of_messages, created_by, members, number_of_members, messages];
 }
 
 let send_message = (message) => {
 
 	if (!message.trim()) return;
 
-	let number_of_messages, created_by, members, number_of_members, messages, typing;
+	let number_of_messages, created_by, members, number_of_members, messages;
 	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
 		number_of_messages = snapshot.val()["Number_of_messages"];
 		created_by = snapshot.val()["Created_by"];
 		members = snapshot.val()["Members"];
 		number_of_members = snapshot.val()["Number_of_members"];
-		typing = snapshot.val()["Typing"];
 	});
 	firebase.database().ref("/chatrooms/" + id + "/Messages/message" + (number_of_messages + 1)).set({
 		Message: message,
@@ -175,8 +127,7 @@ let send_message = (message) => {
 		Members: members,
 		Number_of_members: number_of_members,
 		Number_of_messages: number_of_messages + 1,
-		Messages: messages,
-		Typing: typing
+		Messages: messages
 	});
 
 }
