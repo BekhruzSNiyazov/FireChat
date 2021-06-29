@@ -18,16 +18,11 @@ const navbar = createNavBar();
 navbar.setTitle("FireChat");
 
 navbar.addItem("home", "Home");
+navbar.addItem("link", ["Settings", "/settings"]);
 
 if (!checkCookie("username")) {
 	navbar.addItem("button", ["primary", "register", "window.location.replace(`register`)"], "right", "nav-button");
 	navbar.addItem("button", ["primary", "sign in", "window.location.replace(`sign-in`)"], "right", "nav-button");
-} else {
-	navbar.addItem("button", [
-		"danger",
-		"sign out",
-		"setCookie(`username`, ``); setCookie(`name`, ``); setCookie(`tempUsername`, ``); window.location.replace(`/`);"
-	], "right", "nav-button");
 }
 
 navbar.addItem("button", ["primary", "create chatroom", "window.location.replace(`create-chatroom`)"], "right");
@@ -52,3 +47,6 @@ let generate_id = () => {
 	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
+if (getCookie("theme") !== "light") {
+	toggleTheme();
+}
