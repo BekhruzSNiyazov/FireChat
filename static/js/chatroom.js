@@ -165,7 +165,7 @@ let load_messages = (snapshot) => {
 	window.scrollTo(0, document.body.scrollHeight);
 }
 
-const [messageInColor, messageOutColor] = getCookie("theme") === "light" ? ["#c9c9cc9", "#e3e3e3"] : ["var(--bs-dark)", "var(--bs-gray)"];
+const [messageInColor, messageOutColor] = getCookie("theme") === "light" ? ["#c9c9c9", "#e3e3e3"] : ["var(--bs-dark)", "var(--bs-gray)"];
 
 addStyle(`
 
