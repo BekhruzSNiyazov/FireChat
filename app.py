@@ -20,7 +20,11 @@ def create_chatroom():
 
 @app.route("/chat-<_id>")
 def chatroom(_id):
-	return render_template("chatroom.html", id=id);
+	return render_template("chatroom.html");
+
+@app.route("/settings")
+def settings():
+	return render_template("settings.html")
 
 if __name__ == "__main__":
 	app.run(debug=True) 
