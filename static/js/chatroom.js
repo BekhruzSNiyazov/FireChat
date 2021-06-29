@@ -165,6 +165,8 @@ let load_messages = (snapshot) => {
 	window.scrollTo(0, document.body.scrollHeight);
 }
 
+const [messageInColor, messageOutColor] = getCookie("theme") === "light" ? ["#c9c9cc9", "#e3e3e3"] : ["var(--bs-dark)", "var(--bs-gray)"];
+
 addStyle(`
 
 .messageField {
@@ -177,7 +179,7 @@ body {
 
 .message {
 	display: inline-block;
-	background-color: #c9c9c9;
+	background-color: ${messageInColor};
 	border-radius: 18px;
 	padding: 8px 20px;
 	max-width: 40%;
@@ -187,7 +189,7 @@ body {
 }
 
 .myMessage {
-	background-color: #e3e3e3;
+	background-color: ${messageOutColor};
 	float: right;
 }
 
