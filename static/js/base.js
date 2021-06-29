@@ -40,7 +40,12 @@ h1, h2, h3, h4, h5, h6 {
 `);
 
 let copy_to_clipboard = (text) => {
-	navigator.clipboard.writeText(text);
+	const copy = document.createElement("textarea");
+	document.body.appendChild(copy);
+	copy.value = text;
+	copy.select();
+	document.execCommand("copy");
+	document.body.removeChild(copy);
 }
 
 let generate_id = () => {
