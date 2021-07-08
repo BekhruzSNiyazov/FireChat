@@ -132,11 +132,9 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 				setCookie("tempUsername" + id, username);
 			} else if (checkCookie("tempUsername" + id)) {
 				username = getCookie("tempUsername" + id);
-				setCookie("username", username);
 			} else {
 				username = "Guest " + (number_of_members + 1);
 				setCookie("tempUsername" + id, username);
-				setCookie("username", username);
 			}
 			if (!members.includes(getCookie("username")) && !members.includes(getCookie("tempUsername" + id))) {
 				firebase.database().ref("/chatrooms/" + id).set({
