@@ -14,7 +14,7 @@ let text = "change the app theme to ";
 let themeButton = addButton(getCookie("theme") === "light" ? text + "dark" : text + "light", getCookie("theme") === "light" ? "dark" : "light");
 themeButton.onclick = () => {
 	toggleTheme();
-	const currentTheme = getCookie("theme");
+	const currentTheme = getCookie("theme") || "light";
 	themeButton.text = `change the app theme to ${currentTheme}`;
 	themeButton.type = currentTheme;
 	themeButton.update();
