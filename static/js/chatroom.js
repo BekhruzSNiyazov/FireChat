@@ -170,7 +170,6 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 document.onkeydown = async (e) => {
 	messageField.element.focus();
 	if (!e) e = windows.event;
-	console.log(e.key);
 	if (e.key === "Enter" && !multiLineMode) {
 		send_message(messageField.element.value);
 		messageField.element.value = "";
