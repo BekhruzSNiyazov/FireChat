@@ -52,6 +52,6 @@ let generate_id = () => {
 	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
-if (getCookie("theme") !== "light") {
+if (getCookie("theme") !== "light" || !getCookie("theme")) {
 	toggleTheme();
 }
