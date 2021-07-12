@@ -12,7 +12,7 @@ settingsButton.onclick = () => {
 	window.location.replace("chatroom-settings/" + id);
 }
 settingsButton.update();
-settingsButton.setStyle("margin-right: 5vw;");
+settingsButton.setStyle("margin-right: 1vw; position: fixed;");
 
 addNewLine();
 createAlertField();
