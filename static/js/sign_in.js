@@ -29,7 +29,7 @@ signInButton.onclick = () => {
     if (username === "" || password === "") {
         alert("You must fill in all input fields!")
     } else {
-        firebase.database().ref("/users/" + username).on("value", function(snapshot) {
+        firebase.database().ref("/users/" + username).on("value", snapshot => {
             if (!snapshot.val()) {
                 alert("Username or password is incorrect. Try again.");
             } else {
