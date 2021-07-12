@@ -55,3 +55,12 @@ let generate_id = () => {
 if (getCookie("theme") !== "light" || !getCookie("theme")) {
 	toggleTheme();
 }
+
+addStyle(`
+
+hr {
+	margin-left: 5%;
+	margin-right: 5%;
+}
+
+`);

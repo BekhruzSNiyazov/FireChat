@@ -1,86 +1,3 @@
-class MsgField extends basicUIObject {
-	constructor(placeholder) {
-		super();
-		this.placeholder = placeholder;
-		this.value = "";
-		this.position = "left";
-		this.theme = websiteTheme;
-		this.hiddenId = "input-" + inputCount++;
-		if (!["light", "dark"].includes(this.theme)) {
-			throw `Theme can only be "light" or "dark"`;
-		}
-	}
-
-	// this function adds input to the body
-	add(visible = true) {
-		this.classes = " " + this.classes + " ";
-		let createOuter = false;
-		if (!this.added) {
-			this.wrapper = this.wrap();
-			this.element = document.createElement("textarea");
-			this.element.rows = 1;
-			this.outerElement = document.createElement("div");
-			this.outerElement.id = this.hiddenId + "Outer";
-			if (visible) body.appendChild(this.wrapper);
-			createOuter = true;
-			this.added = true;
-		} else {
-			this.outerElement.style.display = "block";
-		}
-		this.removed = false;
-
-		this.outerElement.className = "form-outline" + (!this.width ? " short-input " : "");
-		if (this.position === "center")
-			this.outerElement.style.margin = "auto";
-		else if (this.position === "right") {
-			this.outerElement.style.marginRight = "0";
-			this.outerElement.style.marginLeft = "auto";
-		}
-		this.outerElement.className += " " + this.classes;
-
-		this.element.id = this.id + " " + this.hiddenId + "forLabel for";
-		this.element.value = this.value;
-		if (!this.width) {
-			this.element.className += " short-input";
-		} else {
-			this.element.style.width = this.width;
-		}
-		this.element.className += " form-control " + this.classes;
-
-		this.label = document.createElement("label");
-		this.label.className = "form-label";
-		this.label.htmlFor = this.hiddenId + "forLabel";
-		this.label.innerHTML = this.placeholder;
-
-		if (createOuter) {
-			this.outerElement.appendChild(this.element);
-			this.outerElement.appendChild(this.label);
-			this.wrapper.appendChild(this.outerElement);
-		}
-
-		manageTheme(this.outerElement, this.theme);
-		if (this.theme === "light") {
-			this.outerElement.removeChild(this.outerElement.getElementsByTagName("label")[0]);
-			this.label.className += " text-dark";
-			this.outerElement.appendChild(this.label);
-			this.element.className += " text-dark";
-		} else {
-			this.outerElement.removeChild(this.outerElement.getElementsByTagName("label")[0]);
-			this.label.className += " text-light";
-			this.outerElement.appendChild(this.label);
-			this.element.className += " text-light";
-		}
-
-		this.setStyle(this.style);
-	}
-}
-
-let addMessageField = (placeholder = "") => {
-	let msgField = new MsgField(placeholder);
-	msgField.add();
-	return msgField;
-}
-
 let md = new Remarkable();
 
 const chatroom = window.location.href;
@@ -109,15 +26,14 @@ messageField.element.innerHTML = messageField.element.innerHTML.replaceAll("<inp
 
 let joined = false;
 let messages;
-let received_messages = [];
 let messages_text = [];
 let line_breaks = [];
 let multiLineMode = false;
+let chatroom_name;
 
-firebase.database().ref("/chatrooms").on("value", (snapshot) => {
+firebase.database().ref("/chatrooms").on("value", snapshot => {
 	// if the chatroom was already created
 	if (snapshot.val()[id]) {
-
 		// making the user join the chatroom
 		if (!joined) {
 			joined = true;
@@ -126,6 +42,7 @@ firebase.database().ref("/chatrooms").on("value", (snapshot) => {
 			const number_of_messages = snapshot.val()[id]["Number_of_messages"];
 			const messages = snapshot.val()[id]["Messages"];
 			const number_of_members = snapshot.val()[id]["Number_of_members"];
+			chatroom_name = snapshot.val()[id]["Name"];
 			let username;
 			if (checkCookie("username")) {
 				username = getCookie("username");
@@ -195,7 +112,7 @@ let send_message = (message) => {
 	if (!message.trim()) return;
 
 	let number_of_messages, created_by, members, number_of_members, messages;
-	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
+	firebase.database().ref("/chatrooms/" + id).on("value", snapshot => {
 		number_of_messages = snapshot.val()["Number_of_messages"];
 		created_by = snapshot.val()["Created_by"];
 		members = snapshot.val()["Members"];
@@ -205,7 +122,7 @@ let send_message = (message) => {
 		Message: message,
 		Sent_by: getCookie("tempUsername" + id)
 	});
-	firebase.database().ref("/chatrooms/" + id).on("value", (snapshot) => {
+	firebase.database().ref("/chatrooms/" + id).on("value", snapshot => {
 		messages = snapshot.val()["Messages"];
 	});
 	firebase.database().ref("/chatrooms/" + id).set({
@@ -222,9 +139,11 @@ let remove_messages = () => {
 	messages_text.forEach((message) => {
 		message.remove();
 	});
+	messages_text = [];
 	line_breaks.forEach((line_break) => {
 		line_break.remove();
 	});
+	line_breaks = [];
 }
 
 let load_messages = (snapshot) => {
@@ -250,6 +169,50 @@ let load_messages = (snapshot) => {
 		}
 	}
 	window.scrollTo(0, document.body.scrollHeight);
+}
+
+let add_chatroom = () => {
+	let name, number_of_chatrooms, password, username, recent_chatrooms;
+	let done1 = false, done2 = false, done3 = false, done4 = false;
+	firebase.database().ref("/users/" + getCookie("username")).on("value", snapshot => {
+		if (!done1) {
+			done1 = true;
+			name = snapshot.val()["Name"];
+			number_of_chatrooms = snapshot.val()["Number_of_chatrooms"];
+			password = snapshot.val()["Password"];
+			username = snapshot.val()["Username"];
+
+			if (!done2) {
+				done2 = false;
+				firebase.database().ref("/users/" + getCookie("username") + "/Chatrooms/chatroom" + (number_of_chatrooms + 1)).set({
+					Id: id,
+					Name: chatroom_name ? chatroom_name : id
+				});
+			}
+
+			if (!done3) {
+				done3 = false;
+				firebase.database().ref("/users/" + getCookie("username")).on("value", snpshot => {
+					recent_chatrooms = snpshot.val()["Chatrooms"];
+
+					if (!done4) {
+						done4 = true;
+						firebase.database().ref("/users/" + getCookie("username")).set({
+							Chatrooms: recent_chatrooms,
+							Name: name,
+							Number_of_chatrooms: number_of_chatrooms + 1,
+							Password: password,
+							Username: username
+						});
+					}
+				});
+			}
+		}
+	});
+}
+
+if (checkCookie("username")) {
+	add_chatroom();
 }
 
 const [messageInColor, messageOutColor] = getCookie("theme") === "light" ? ["#c9c9c9", "#e3e3e3"] : ["var(--bs-dark)", "var(--bs-gray)"];

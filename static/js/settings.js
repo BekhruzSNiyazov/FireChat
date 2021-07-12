@@ -42,11 +42,6 @@ signOutButton.update();
 
 addStyle(`
 
-hr {
-	margin-left: 5%;
-	margin-right: 5%;
-}
-
 h1, h2 {
 	margin-left: 5%;
 }
