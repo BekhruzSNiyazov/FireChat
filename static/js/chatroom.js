@@ -7,8 +7,12 @@ setTitle("Chatroom " + id + " | FireChat");
 
 addNewLine();
 
-let settingsButton = addButton("chat settings", getCookie("theme") !== "light" ? "dark" : "light", "right");
-settingsButton.setStyle("margin-right: 1%;");
+let settingsButton = addButton("<i class=\"fas fa-cog\"></i>", getCookie("theme") !== "light" ? "dark" : "light", "right");
+settingsButton.onclick = () => {
+	window.location.replace("chatroom-settings/" + id);
+}
+settingsButton.update();
+settingsButton.setStyle("margin-right: 5vw;");
 
 addNewLine();
 createAlertField();
