@@ -24,21 +24,23 @@ themeButton.onclick = () => {
 themeButton.classes = " button";
 themeButton.update();
 
-addHTML("<hr>");
+if (checkCookie("username")) {
+	addHTML("<hr>");
 
-addHeading("Account", 5);
+	addHeading("Account", 5);
 
-addNewLine();
+	addNewLine();
 
-let signOutButton = addButton("sign out", "danger");
-signOutButton.onclick = () => {
-	setCookie("username", "");
-	setCookie("name", "");
-	setCookie("tempUsername", "");
-	window.location.replace("/");
+	let signOutButton = addButton("sign out", "danger");
+	signOutButton.onclick = () => {
+		setCookie("username", "");
+		setCookie("name", "");
+		setCookie("tempUsername", "");
+		window.location.replace("/");
+	}
+	signOutButton.classes = " button";
+	signOutButton.update();
 }
-signOutButton.classes = " button";
-signOutButton.update();
 
 addStyle(`
 
