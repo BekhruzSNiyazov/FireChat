@@ -6,6 +6,11 @@ const id = chatroom.split("-")[1];
 setTitle("Chatroom " + id + " | FireChat");
 
 addNewLine();
+
+let settingsButton = addButton("chat settings", getCookie("theme") !== "light" ? "dark" : "light", "right");
+settingsButton.setStyle("margin-right: 1%;");
+
+addNewLine();
 createAlertField();
 
 const splitter = "||splitter||";
@@ -181,6 +186,13 @@ let add_chatroom = () => {
 			number_of_chatrooms = snapshot.val()["Number_of_chatrooms"];
 			password = snapshot.val()["Password"];
 			username = snapshot.val()["Username"];
+			recent_chatrooms = snapshot.val()["Chatrooms"];
+
+			for (let key in recent_chatrooms) {
+				if (recent_chatrooms[key]["Id"] === id) {
+					[done2, done3, done4] = [true, true, true];
+				}
+			}
 
 			if (!done2) {
 				done2 = false;
