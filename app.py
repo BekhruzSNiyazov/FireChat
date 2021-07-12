@@ -26,5 +26,9 @@ def chatroom(_id):
 def settings():
 	return render_template("settings.html")
 
+@app.route("/chatroom-settings/<_id>")
+def chatroom_settings(_id):
+    return render_template("chatroom_settings.html")
+
 if __name__ == "__main__":
 	app.run(debug=True) 
