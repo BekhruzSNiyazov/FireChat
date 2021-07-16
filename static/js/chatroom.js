@@ -259,11 +259,7 @@ body {
 	float: right;
 }
 
-`);
-
-addStyle(`
 img {
 	width: 10vw;
-	height: 4vw;
 }
 `);
