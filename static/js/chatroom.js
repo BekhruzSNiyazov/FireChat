@@ -1,3 +1,5 @@
+let permission = await Notification.requestPermission();
+
 let md = new Remarkable();
 
 const chatroom = window.location.href;
@@ -165,6 +167,11 @@ let load_messages = (snapshot) => {
 				message.classes = "message";
 				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername" + id)) {
 					message.classes += " myMessage";
+				} else {
+					const notification = new Notification(msg["Sent_by"], {
+						body: msg["Message"]
+					});
+					notification.onclick = () => window.open(chatroom);
 				}
 				message.update();
 				message.element.innerHTML = md.render(msg["Message"]).replaceAll("<p>", "").replaceAll("</p>", "");
