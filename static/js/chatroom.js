@@ -169,10 +169,12 @@ let load_messages = (snapshot) => {
 				if (msg["Sent_by"] === getCookie("username") || msg["Sent_by"] === getCookie("tempUsername" + id)) {
 					message.classes += " myMessage";
 				} else {
-					const notification = new Notification(msg["Sent_by"], {
-						body: msg["Message"]
-					});
-					notification.onclick = () => window.open(chatroom);
+					if (i == number_of_messages) {
+						const notification = new Notification(msg["Sent_by"], {
+							body: msg["Message"]
+						});
+						notification.onclick = () => window.open(chatroom);
+					}
 				}
 				message.update();
 				message.element.innerHTML = md.render(msg["Message"]).replaceAll("<p>", "").replaceAll("</p>", "");
