@@ -260,3 +260,10 @@ body {
 }
 
 `);
+
+addStyle(`
+img {
+	width: 10vw;
+	height: 4vw;
+}
+`);
