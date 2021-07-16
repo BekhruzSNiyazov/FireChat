@@ -1,4 +1,5 @@
-async () => { let permission = await Notification.requestPermission(); }();
+let notification_init = async () => let permission = await Notification.requestPermission();
+notification_init();
 
 let md = new Remarkable();
 
