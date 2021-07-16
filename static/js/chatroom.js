@@ -260,6 +260,6 @@ body {
 }
 
 img {
-	width: 10vw;
+	width: 30vw;
 }
 `);
