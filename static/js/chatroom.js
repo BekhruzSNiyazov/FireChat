@@ -1,4 +1,4 @@
-let permission = await Notification.requestPermission();
+async () => { let permission = await Notification.requestPermission(); }();
 
 let md = new Remarkable();
 
